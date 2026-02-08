@@ -3,7 +3,7 @@ import shutil
 from playwright.sync_api import sync_playwright
 import os
 import asyncio
-os.chdir(r" \marksix_data")
+os.chdir(r"\marksix_data")
 FILE_PATHS = {
     "latest": r'latest.json',
     "-1": r'latest-1.json',
