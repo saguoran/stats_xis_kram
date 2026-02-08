@@ -2,16 +2,17 @@ import json
 import shutil
 from playwright.sync_api import sync_playwright
 import os
-os.chdir(r"C:\Users\frees\Downloads\tensorflow_jupyterlab\mark_six\marksix_data")
+import asyncio
+os.chdir(r" \marksix_data")
 FILE_PATHS = {
     "latest": r'latest.json',
     "-1": r'latest-1.json',
     "top100": r'top100.json',
 }
-def scrape_mark_six():
+async def scrape_mark_six():
     with sync_playwright() as p:
         # Launch browser (headless=True is faster, False lets you watch it)
-        browser = p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
@@ -95,8 +96,11 @@ def check_data():
             
     print("Data check complete.")
 
-if __name__ == "__main__":
-    has_update = scrape_mark_six()
+async def main():
+    has_update = await scrape_mark_six()
     if has_update:
         take_top_100()
     # check_data()
+
+if __name__ == "__main__":
+    asyncio.run(main())
