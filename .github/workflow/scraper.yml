@@ -1,0 +1,37 @@
+name: Playwright Scraper Bot
+
+on:
+  schedule:
+    # 9:32 PM HKT (13:32 UTC) on Tue, Thu, Sat
+    - cron: '32 13 * * 2,4,6'
+  workflow_dispatch: # Allows you to run it manually for testing
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          # Add other dependencies like: pip install requests
+          python -m playwright install --with-deps chromium
+
+      - name: Run Scraper
+        run: python playwright_scraper.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add *.json
+          git commit -m "Auto-update JSON data: $(date)" || echo "No changes to commit"
+          git push
