@@ -1,70 +1,76 @@
+import asyncio
 import json
 import shutil
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 import os
-import asyncio
-os.chdir(r"\marksix_data")
+os.chdir("marksix_data")
 FILE_PATHS = {
     "latest": r'latest.json',
     "-1": r'latest-1.json',
     "top100": r'top100.json',
 }
 async def scrape_mark_six():
-    with sync_playwright() as p:
-        # Launch browser (headless=True is faster, False lets you watch it)
+   async with async_playwright() as p: 
         browser = await p.chromium.launch(headless=True)
-        context = browser.new_context()
-        page = context.new_page()
+        # 1. Create a context with a real user agent
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        page = await context.new_page()
 
-        print("Navigating to HKJC Mark Six Results...")
+        print("Navigating to HKJC...")
         url = "https://bet.hkjc.com/en/marksix/results"
-        page.goto(url)
-        # 1. Wait for the main container to exist and be visible
-        page.wait_for_selector(".marksix-results-table-container", state="visible", timeout=10000)
+        
+        try:
+            # 2. Faster wait strategy + longer timeout
+            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            
+            # 3. Specifically wait for the table container to appear
+            await page.wait_for_selector(".marksix-results-table-container", timeout=20000)
+        
+            first_row = page.locator(".table-row").first
+            cell_locator = first_row.locator(".table-cell")
 
-        # 2. Define the locators
-        first_row = page.locator(".table-row").first
-        cell_locator = first_row.locator(".table-cell")
+            # 4. ADD 'await' to wait_for and all()
+            await cell_locator.first.wait_for(state="visible", timeout=10000)
+            cells = await cell_locator.all()
 
-        # 3. THE FIX: Wait for at least one cell to be attached/visible
-        # This ensures that cells[0] will actually exist when we call .all()
-        cell_locator.first.wait_for(state="visible", timeout=10000)
+            # 5. ADD 'await' to inner_text() and other data calls
+            draw_id = await cells[0].locator("a").inner_text()
+            draw_date = await cells[1].inner_text()
+            draw_sb_name = await cells[2].inner_text()
 
-        # 4. Now safely get the list
-        cells = cell_locator.all()
+            # Use await inside the list comprehension too
+            draw_numbers = [await img.get_attribute("alt") for img in await cells[3].locator(".img-box img").all()]
 
-        # 5. Extract data (this will no longer throw IndexError)
-        draw_id = cells[0].locator("a").inner_text()
-        draw_date = cells[1].inner_text()
-        draw_sb_name = cells[2].inner_text()
+            latest_result = {
+                "id": draw_id,
+                "date": draw_date,
+                "sbnameE": draw_sb_name,
+                "no": draw_numbers[:-1],
+                "sno": draw_numbers[-1]
+            }
+            print(latest_result)
+            
+            await browser.close()
+            has_update = False
+            with open(FILE_PATHS['latest'], 'r', encoding='utf-8') as f:
+                data: list = json.load(f)
+                if data[0]['id'] !=  draw_id:
+                    has_update = True
+                    data.insert(0,latest_result)
 
-        # For the numbers, use a locator inside the specific cell (index 3)
-        # This looks for all images inside the 'img-box' within the 4th cell
-        draw_numbers = [img.get_attribute("alt") for img in cells[3].locator(".img-box img").all()]
-
-        latest_result = {
-            "id": draw_id,
-            "date": draw_date,
-            "sbnameE": draw_sb_name,
-            "no": draw_numbers[:-1],
-            "sno": draw_numbers[-1]
-        }
-        print(latest_result)
-        data = []
-
-        has_update = False
-        with open(FILE_PATHS['latest'], 'r', encoding='utf-8') as f:
-            data: list = json.load(f)
-            if data[0]['id'] !=  draw_id:
-                has_update = True
-                data.insert(0,latest_result)
-
-        if has_update:
-            shutil.copyfile(FILE_PATHS['latest'], FILE_PATHS['-1'])
-            with open(FILE_PATHS['latest'], 'w', encoding='utf-8') as f:
-                json.dump(data,f , ensure_ascii=False, indent=4)
-        browser.close()
-        return has_update
+            if has_update:
+                shutil.copyfile(FILE_PATHS['latest'], FILE_PATHS['-1'])
+                with open(FILE_PATHS['latest'], 'w', encoding='utf-8') as f:
+                    json.dump(data,f , ensure_ascii=False, indent=4)
+            return has_update
+        except Exception as e:
+            print(f"Scraper failed: {e}")
+            # Optional: take a screenshot to see what went wrong
+            await page.screenshot(path="error.png")
+            
+        await browser.close()
     # TODO
 # the most and lest frequent 25 sno
 # in 2 years, a year, half year, a season, a month
@@ -101,6 +107,7 @@ async def main():
     if has_update:
         take_top_100()
     # check_data()
+    return "Finished"
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    print(asyncio.run(main()))
