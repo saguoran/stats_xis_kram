@@ -1,16 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./styles.css"
+    <title>特</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./loading.css">
 </head>
+
 <body>
-    <h1>Mark Six Data</h1>
+
+    <div id="test" class="loader-overlay active">
+        <div class="loader-container">
+            <svg viewBox="0 0 220 220" class="loader-svg">
+                <circle cx="110" cy="110" r="50" fill="none" stroke="cyan" stroke-width="1" />
+                <g class="inner-hex-spin">
+                    <polygon points="110,60 153.3,135 66.7,135" fill="none" stroke="purple" stroke-width="1" />
+                    <polygon points="110,160 66.7,85 153.3,85" fill="none" stroke="pink" stroke-width="1" />
+                </g>
+                <g class="outer-hex-spin">
+                    <polygon points="110,10 196.6,160 23.4,160" fill="none" stroke="orange" stroke-width="1" />
+                    <polygon points="110,210 23.4,60 196.6,60" fill="none" stroke="green" stroke-width="1" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div id="app-content">
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="openSection('stats', this)">
+                <span>📈</span>
+                <small>Stats</small>
+            </button>
+            <button class="nav-item" onclick="openSection('results', this)">
+                <span>📊</span>
+                <small>Results</small>
+            </button>
+        </nav>
+
+        <div id="stats" class="tab-content active">
+            <h1>近50期</h1>
+            <h2>特</h2>
+            <div id="sno-stats"></div>
+            <h2>平特</h2>
+            <div id="nosno-stats"></div>
+        </div>
+        <div id="results" class="tab-content ">
+            <h1>近100期</h1>
+            <div id="data-list"></div>
+        </div>
+        <div  class="tab-content active">
+        </div>
+    </div>
+
+    <!-- simulation -->
     <section id="data-section"></section>
-    <button onclick="numbersCounter(50)">Show Top 50</button>
     <section id="counter-section"></section>
     <script src="./script.js"></script>
 </body>
+
 </html>

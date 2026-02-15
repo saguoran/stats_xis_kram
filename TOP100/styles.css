@@ -6,42 +6,135 @@ body {
     color: var(--text-1);
     margin: 20px;
 }
+* { box-sizing: border-box; }
 
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid var(--surface-3);
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--surface-2);
-    font-size: 0.95rem;
+
+#test {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    z-index: 10000;
+    display: none; /* Hidden by default... */
+    justify-content: center;
+    align-items: center;
 }
 
-th, td {
-    padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid var(--surface-3);
-    border-right: 1px solid var(--surface-3);
-    text-align: left;
-    vertical-align: middle;
-    background: var(--surface-1);
+#test.active {
+    display: flex; /* ...but visible because of the 'active' class in HTML */
 }
 
-thead th {
-    background: var(--surface-3);
-    color: var(--text-0);
-    font-weight: 600;
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
 
-tbody tr:nth-child(even) td {
-    background: var(--surface-2);
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 20px;
 }
 
-tbody tr:hover td {
-    background: var(--primary-2);
-    color: var(--text-0);
+.nav-item.active {
+  color: #007bff; /* Highlight color */
 }
 
-/* remove extra borders on the edges */
-th:last-child, td:last-child { border-right: none; }
-tbody tr:last-child td { border-bottom: none; }
+.tab-content {
+  display: none; /* Hide sections by default */
+  padding-bottom: 70px; /* Prevent content from being hidden behind the bar */
+  /* background-color: var(--orange-6); */
+}
+
+.tab-content.active {
+  display: block;
+}
+#sno-stats, #nosno-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.data-row{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 2px 0;
+    padding: 2px;
+    width: 30px;
+    justify-content: space-evenly;
+    align-items: center;
+    border: #007bff 1px solid;
+    border-radius: 2px;
+    color: var(--stone-10)
+}
+.data-row:nth-child(odd) {
+    background-color: var(--gray-2);   
+}
+.data-row div:first-child{
+    /* background-color: white; */
+}
+.header {
+  font-weight: bold;
+}
+
+#data-list{
+    display: flex;
+    gap: 4px;
+    flex-flow: column wrap;
+    justify-content: start;
+    align-items: start;
+}
+#data-list > div:nth-child(odd){
+    border-bottom: red 1px solid;
+}
+.result-row {
+    display: flex;
+    gap: 8px;
+    margin: 2px 0;
+    padding: 2px 2px;
+    width:400px;
+    align-items: center;
+    justify-content: start;
+    border-bottom: #007bff 1px solid;
+    color: var(--stone-10);
+}
+
+.no-list{
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    justify-content: space-between;
+    border: #007bff 1px solid;
+    border-radius: 2px;
+    padding: 0 4px;
+}
+
+.no-list div:nth-child(odd){
+    background-color: var(--gray-2);
+}
+
+.sno{
+    color: var(--gray-1);
+    padding: 4px 4px;
+    text-align: center;
+    background-color: var(--orange-12);
+    border-radius: 5px;
+}

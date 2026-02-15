@@ -1,54 +1,33 @@
 console.log("script loaded");
 
 const DATA_PATH = "../marksix_data/top100.json";
+// const DATA_PATH = "../marksix_data/latest.json";
 let data = [];
-
-const el = (tag, props = {}, ...children) => {
-  const e = document.createElement(tag);
-  Object.assign(e, props);
-  children.flat().forEach(c => {
-    if (c == null) return;
-    e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-  });
-  return e;
-};
 
 async function loadJSON() {
   const res = await fetch(DATA_PATH);
   data = await res.json();
+  console.log("Data loaded:");
+  const dataList = document.getElementById("data-list");
+  let allRowsHTML = ""; // Create a temporary string
 
-  const table = el("table", { className: "number-table" },
-    el("thead", {},
-      el("tr", {},
-        ["No.", "ID", "Date", "Numbers", "SNO"].map(t => el("th", {}, t))
-      )
-    ),
-    el("tbody", {},
-      data.map((item, i) => el("tr", {},
-        el("td", {}, String(i + 1)),
-        el("td", {}, item.id),
-        el("td", {}, item.date),
-        el("td", {}, item.no.join(", ")),
-        el("td", {}, String(item.sno))
-      ))
-    )
-  );
+  data.forEach((item, index) => {
+    item.sno = Number(item.sno);
+    const noList = item.no.map((n) => `<div>${n}</div>`).join("");
 
-  const container = el("div", { className: "number-container" }, table);
-  const target = document.querySelector("#data-section");
-  target.appendChild(container);
-}
+    // Build the string in memory (fast)
+    allRowsHTML += `
+    <div class="result-row header">
+      <div style='flex:1;'>${index + 1}.</div>
+      <div style='flex:2;'>${item.id}</div>
+      <div style='flex:4;'>${item.date}</div>
+      <div style='flex:6;' class='no-list'>${noList}</div>
+      <div style='flex:1;' class='sno'>${item.sno}</div>
+    </div>`;
+  });
 
-function buildCountsTable(title, entries) {
-  const ths = entries.map(([k]) => el("th", { style: "padding:6px;border:1px solid #ddd;background:#f7f7f7" }, String(k)));
-  const tds = entries.map(([, v]) => el("td", { style: "padding:6px;border:1px solid #ddd;text-align:center" }, String(v)));
-  return el("div", { style: "min-width:260px;max-width:100%" },
-    el("h3", { style: "margin:0 0 8px 0" }, title),
-    el("table", { style: "border-collapse:collapse;width:100%" },
-      el("thead", {}, el("tr", {}, ths)),
-      el("tbody", {}, el("tr", {}, tds))
-    )
-  );
+  // Update the DOM only ONCE (very fast)
+  dataList.innerHTML = allRowsHTML;
 }
 
 function numbersCounter(count) {
@@ -64,7 +43,7 @@ function numbersCounter(count) {
   }
 
   // ensure keys 1..49 exist and sort numerically
-  const makeEntries = obj => {
+  const makeEntries = (obj) => {
     for (let i = 1; i <= 49; i++) if (!(i in obj)) obj[i] = 0;
     return Object.entries(obj).sort((a, b) => Number(a[0]) - Number(b[0]));
   };
@@ -72,22 +51,75 @@ function numbersCounter(count) {
   const snoEntries = makeEntries(snoObj);
   const allEntries = makeEntries(allObj);
 
-  const prev = document.querySelector("#counts-container");
-  if (prev) prev.remove();
-
-  const countsContainer = el("div", { id: "counts-container", style: "display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap" },
-    buildCountsTable(`特近${count}期`, snoEntries),
-    buildCountsTable(`平特近${count}期`, allEntries)
-  );
-
-  document.querySelector("#data-section").appendChild(countsContainer);
   console.log("SNO counts:", snoEntries);
   console.log("All counts:", allEntries);
-}
 
-async function main() {
-  await loadJSON();
-  numbersCounter(50);
-}
+  // 1. Process SNO Stats
+  const statsContainer = document.getElementById("sno-stats");
+  let snoHTML = ""; // Accumulator string
 
-main();
+  snoEntries.forEach(([num, count]) => {
+    snoHTML += `
+    <div class="data-row header">
+      <div>${num}</div>
+      <div>${count}</div>
+    </div>`;
+  });
+  statsContainer.innerHTML = snoHTML; // Single DOM update
+
+  // 2. Process AllStats
+  const allStatsContainer = document.getElementById("nosno-stats");
+  let allStatsHTML = ""; // Accumulator string
+
+  allEntries.forEach(([num, count]) => {
+    allStatsHTML += `
+    <div class="data-row header">
+      <div>${num}</div>
+      <div>${count}</div>
+    </div>`;
+  });
+  allStatsContainer.innerHTML = allStatsHTML; // Single DOM update
+}
+async function initializeApp() {
+  try {
+    console.log("Starting...");
+    await loadJSON();
+
+    // 1. Kick off the heavy calculations
+    numbersCounter(50); 
+    console.log("Counter finished");
+
+    // 2. Give the browser one "breath" (frame) to render the new HTML
+    // before taking away the white curtain.
+    requestAnimationFrame(() => {
+      const loader = document.getElementById('test');
+      setTimeout(() => {
+        loader.classList.remove('active');
+        console.log("App ready!");
+      }, 500); // 0.5s splash screen feel
+    });
+
+  } catch (e) {
+    console.error("Critical Failure:", e);
+  }
+}
+window.onload = initializeApp;
+
+function openSection(sectionId, element) {
+  // 1. Hide all content sections
+  document.querySelectorAll(".tab-content").forEach((content) => {
+    content.classList.remove("active");
+  });
+
+  // 2. Remove active state from all buttons
+  document.querySelectorAll(".nav-item").forEach((button) => {
+    button.classList.remove("active");
+  });
+
+  // 3. Show the chosen section and highlight the button
+  document.getElementById(sectionId).classList.add("active");
+  element.classList.add("active");
+
+  // 4. Optional: Scroll to top when switching
+  window.scrollTo(0, 0);
+}
