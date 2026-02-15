@@ -40,7 +40,11 @@
         </nav>
 
         <div id="stats" class="tab-content active">
-            <h1>近50期</h1>
+            <h1>统计</h1>
+            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-periods').value)" class="header">
+                近<input type="number" id="num-periods" name="num-periods" min="1" max="100" value="50">/100期 
+                <input type="submit" value="更新">
+            </form>
             <h2>特</h2>
             <div id="sno-stats"></div>
             <h2>平特</h2>
