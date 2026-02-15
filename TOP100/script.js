@@ -3,7 +3,8 @@ console.log("script loaded");
 const DATA_PATH = "../marksix_data/top100.json";
 // const DATA_PATH = "../marksix_data/latest.json";
 let data = [];
-
+let snoEntries = null;
+let allEntries = null;
 async function loadJSON() {
   const res = await fetch(DATA_PATH);
   data = await res.json();
@@ -48,13 +49,26 @@ function numbersCounter(count) {
     return Object.entries(obj).sort((a, b) => Number(a[0]) - Number(b[0]));
   };
 
-  const snoEntries = makeEntries(snoObj);
-  const allEntries = makeEntries(allObj);
+  snoEntries = makeEntries(snoObj);
+  allEntries = makeEntries(allObj);
 
-  console.log("SNO counts:", snoEntries);
-  console.log("All counts:", allEntries);
+  // console.log("SNO counts:", snoEntries);
+  // console.log("All counts:", allEntries);
+}
 
-  // 1. Process SNO Stats
+function sortByNumber() {
+  snoEntries.sort((a, b) => Number(a[0]) - Number(b[0]));
+  allEntries.sort((a, b) => Number(a[0]) - Number(b[0]));
+  renderStats();
+}
+function sortByCount() {
+  snoEntries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
+  allEntries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
+  renderStats();
+} 
+
+function renderStats() {
+    // 1. Process SNO Stats
   const statsContainer = document.getElementById("sno-stats");
   let snoHTML = ""; // Accumulator string
 
@@ -84,11 +98,10 @@ async function initializeApp() {
   try {
     console.log("Starting...");
     await loadJSON();
-
     // 1. Kick off the heavy calculations
     numbersCounter(50); 
+    renderStats();
     console.log("Counter finished");
-
     // 2. Give the browser one "breath" (frame) to render the new HTML
     // before taking away the white curtain.
     requestAnimationFrame(() => {
