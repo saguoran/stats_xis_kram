@@ -41,7 +41,7 @@
 
         <div id="stats" class="tab-content active">
             <h1>统计</h1>
-            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-periods').value)" class="header">
+            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-periods').value);renderStats();" class="header">
                 近<input type="number" id="num-periods" name="num-periods" min="1" max="100" value="50">/100期 
                 <input type="submit" value="更新">
             </form>
