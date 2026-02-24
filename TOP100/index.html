@@ -41,12 +41,19 @@
 
         <div id="stats" class="tab-content active">
             <h1>统计</h1>
-            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-periods').value);renderStats();" class="header">
-                近<input type="number" id="num-periods" name="num-periods" min="1" max="100" value="50">/100期 
+            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-start').value,document.getElementById('num-end').value);renderStats();" class="header">
+                从近<input   inputmode="numeric"
+  pattern="[0-9]*"
+  type="number" id="num-start" name="num-start" min="1" max="100" value="1">到<input   inputmode="numeric"
+  pattern="[0-9]*"
+  type="number" id="num-end" name="num-end" min="1" max="100" value="50">/100期 
                 <input type="submit" value="更新">
+                
+  <small id="range-validation"></small>
             </form>
             <h1>排序</h1>
-            <button type="button" onclick="sortByNumber()">按数字</button><button type="button" onclick="sortByCount()">按次数</button>
+            <button type="button" onclick="sortingType = SortType.NUMBER;renderStats();" class="activate" id="sort-by-num">按数字</button>
+            <button type="button" onclick="sortingType = SortType.COUNT;renderStats();" id="sort-by-count">按次数</button>
             <h2>特</h2>
             <div id="sno-stats"></div>
             <h2>平特</h2>

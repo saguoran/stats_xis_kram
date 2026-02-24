@@ -5,6 +5,18 @@ const DATA_PATH = "../marksix_data/top100.json";
 let data = [];
 let snoEntries = null;
 let allEntries = null;
+let leastFrequentNumbers = null;
+const SortType = {
+  NUMBER: "number",
+  COUNT: "count",
+};
+const sortButtons = {
+  sortByNumButton: document.getElementById('sort-by-num'),
+  sortByCountButton: document.getElementById('sort-by-count'),
+}
+let sortingType = SortType.NUMBER; // default sort by number
+let sortingRemoveStyle = _=>sortButtons.sortByNumButton.classList.remove("activate");
+const rangeValidationText = document.getElementById('range-validation');
 async function loadJSON() {
   const res = await fetch(DATA_PATH);
   data = await res.json();
@@ -31,43 +43,69 @@ async function loadJSON() {
   dataList.innerHTML = allRowsHTML;
 }
 
-function numbersCounter(count) {
-  count = Number(count) || data.length;
-  const slice = data.slice(0, count);
+function numbersCounter(start,end) {
+  if(start>end){
+    // console.log("开始期数必须小于等于结束期数,他们都必须大于0");
+    rangeValidationText.style.display = 'block';
+    rangeValidationText.innerText = "错误输入:开始期数要≤结束期数,他们都要>0";
+    return;
+  }else{
+    rangeValidationText.style.display = 'none';
+  }
+  end = Number(end) || data.length;
+  const slice = data.slice(start-1, end);
 
   const snoObj = {};
   const allObj = {};
   for (const item of slice) {
+    item.sno = parseInt(item.sno);
     snoObj[item.sno] = (snoObj[item.sno] || 0) + 1;
     allObj[item.sno] = (allObj[item.sno] || 0) + 1;
-    for (const n of item.no) allObj[n] = (allObj[n] || 0) + 1;
+    for (let n of item.no){
+      n = parseInt(n);
+       allObj[n] = (allObj[n] || 0) + 1;
+      }
   }
 
   // ensure keys 1..49 exist and sort numerically
   const makeEntries = (obj) => {
     for (let i = 1; i <= 49; i++) if (!(i in obj)) obj[i] = 0;
-    return Object.entries(obj).sort((a, b) => Number(a[0]) - Number(b[0]));
+    return Object.keys(obj).reduce((acc, a,b) => {
+      acc.push([parseInt(a), obj[a]]);
+      return acc;
+    }, []);
   };
 
   snoEntries = makeEntries(snoObj);
   allEntries = makeEntries(allObj);
 
+  // console.log("SNO:", snoObj);
   // console.log("SNO counts:", snoEntries);
   // console.log("All counts:", allEntries);
 }
 
-function sortByNumber() {
-  snoEntries.sort((a, b) => Number(a[0]) - Number(b[0]));
-  allEntries.sort((a, b) => Number(a[0]) - Number(b[0]));
-  renderStats();
+function sortByNumber(entries) {
+  entries.sort((a, b) => Number(a[0]) - Number(b[0]));
 }
-function sortByCount() {
-  snoEntries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
-  allEntries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
-  renderStats();
+function sortByCount(entries) {
+  entries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
 } 
 
 function renderStats() {
+  // console.log("render stats");
+  sortingRemoveStyle();
+  if(sortingType === SortType.NUMBER) {
+    sortByNumber(snoEntries);
+    sortByNumber(allEntries);
+    sortButtons.sortByNumButton.classList.add("activate");
+    sortingRemoveStyle = _=>sortButtons.sortByNumButton.classList.remove("activate");
+  }
+  else if(sortingType === SortType.COUNT) {
+    sortByCount(snoEntries);
+    sortByCount(allEntries);    
+    sortButtons.sortByCountButton.classList.add("activate");
+    sortingRemoveStyle = _=>sortButtons.sortByCountButton.classList.remove("activate");
+  }
     // 1. Process SNO Stats
   const statsContainer = document.getElementById("sno-stats");
   let snoHTML = ""; // Accumulator string
@@ -93,6 +131,17 @@ function renderStats() {
     </div>`;
   });
   allStatsContainer.innerHTML = allStatsHTML; // Single DOM update
+}
+
+function calculateLeastFrequent() {
+  const startingIndex = 10;
+  let head10 = data.slice(0, startingIndex);
+  const allObj = {};
+  for (const item of head10) {
+    allObj[item.sno] = (allObj[item.sno] || 0) + 1;
+    for (const n of item.no) allObj[n] = (allObj[n] || 0) + 1;
+  }
+
 }
 async function initializeApp() {
   try {
