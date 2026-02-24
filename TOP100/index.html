@@ -41,18 +41,19 @@
 
         <div id="stats" class="tab-content active">
             <h1>统计</h1>
-            <form action="javascript:void(0);" onsubmit="numbersCounter(document.getElementById('num-start').value,document.getElementById('num-end').value);renderStats();" class="header">
-                从近<input   inputmode="numeric"
-  pattern="[0-9]*"
-  type="number" id="num-start" name="num-start" min="1" max="100" value="1">到<input   inputmode="numeric"
-  pattern="[0-9]*"
-  type="number" id="num-end" name="num-end" min="1" max="100" value="50">/100期 
+            <form action="javascript:void(0);"
+                onsubmit="numbersCounter(document.getElementById('num-start').value,document.getElementById('num-end').value);renderStats();"
+                class="header">
+                从近<input inputmode="decimal" pattern="[0-9]*" type="number" id="num-start" name="num-start" min="1" required
+                    max="100" value="1">到<input inputmode="decimal" pattern="[0-9]*" type="number" id="num-end" required
+                    name="num-end" min="1" max="100" value="50">/100期
                 <input type="submit" value="更新">
-                
-  <small id="range-validation"></small>
+                <small id="range-validation"></small>
             </form>
+            <h2>更新<span id="update-status"></span></h2>
             <h1>排序</h1>
-            <button type="button" onclick="sortingType = SortType.NUMBER;renderStats();" class="activate" id="sort-by-num">按数字</button>
+            <button type="button" onclick="sortingType = SortType.NUMBER;renderStats();" class="activate"
+                id="sort-by-num">按数字</button>
             <button type="button" onclick="sortingType = SortType.COUNT;renderStats();" id="sort-by-count">按次数</button>
             <h2>特</h2>
             <div id="sno-stats"></div>
@@ -63,7 +64,7 @@
             <h1>近100期</h1>
             <div id="data-list"></div>
         </div>
-        <div  class="tab-content active">
+        <div class="tab-content active">
         </div>
     </div>
 

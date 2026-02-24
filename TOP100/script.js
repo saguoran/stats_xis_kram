@@ -6,16 +6,19 @@ let data = [];
 let snoEntries = null;
 let allEntries = null;
 let leastFrequentNumbers = null;
+
 const SortType = {
   NUMBER: "number",
   COUNT: "count",
 };
-const sortButtons = {
+const domElements = {
   sortByNumButton: document.getElementById('sort-by-num'),
   sortByCountButton: document.getElementById('sort-by-count'),
+  updateStatus: document.getElementById('update-status'),
 }
+let updateStatusRangeText = null;
 let sortingType = SortType.NUMBER; // default sort by number
-let sortingRemoveStyle = _=>sortButtons.sortByNumButton.classList.remove("activate");
+let sortingRemoveStyle = _=>domElements.sortByNumButton.classList.remove("activate");
 const rangeValidationText = document.getElementById('range-validation');
 async function loadJSON() {
   const res = await fetch(DATA_PATH);
@@ -44,7 +47,9 @@ async function loadJSON() {
 }
 
 function numbersCounter(start,end) {
-  if(start>end&&start>=1&&end<=100){
+  start=parseInt(start);
+  end=parseInt(end);
+  if(start>end||start<1||end>100){
     // console.log("开始期数必须小于等于结束期数,他们都必须大于0");
     rangeValidationText.style.display = 'block';
     rangeValidationText.innerText = "错误输入:开始期数要≤结束期数,他们都要>0";
@@ -52,6 +57,8 @@ function numbersCounter(start,end) {
   }else{
     rangeValidationText.style.display = 'none';
   }
+  updateStatusRangeText = `到${start}-${end}期`;
+  domElements.updateStatus.innerText = '中';
   end = Number(end) || data.length;
   const slice = data.slice(start-1, end);
 
@@ -82,13 +89,14 @@ function numbersCounter(start,end) {
   // console.log("SNO:", snoObj);
   // console.log("SNO counts:", snoEntries);
   // console.log("All counts:", allEntries);
+  
 }
 
 function sortByNumber(entries) {
-  entries.sort((a, b) => Number(a[0]) - Number(b[0]));
+  entries.sort((a, b) => a[0] - b[0]);
 }
 function sortByCount(entries) {
-  entries.sort((a, b) => a[1] - b[1] || Number(a[0]) - Number(b[0]));
+  entries.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
 } 
 
 function renderStats() {
@@ -97,14 +105,14 @@ function renderStats() {
   if(sortingType === SortType.NUMBER) {
     sortByNumber(snoEntries);
     sortByNumber(allEntries);
-    sortButtons.sortByNumButton.classList.add("activate");
-    sortingRemoveStyle = _=>sortButtons.sortByNumButton.classList.remove("activate");
+    domElements.sortByNumButton.classList.add("activate");
+    sortingRemoveStyle = _=>domElements.sortByNumButton.classList.remove("activate");
   }
   else if(sortingType === SortType.COUNT) {
     sortByCount(snoEntries);
     sortByCount(allEntries);    
-    sortButtons.sortByCountButton.classList.add("activate");
-    sortingRemoveStyle = _=>sortButtons.sortByCountButton.classList.remove("activate");
+    domElements.sortByCountButton.classList.add("activate");
+    sortingRemoveStyle = _=>domElements.sortByCountButton.classList.remove("activate");
   }
     // 1. Process SNO Stats
   const statsContainer = document.getElementById("sno-stats");
@@ -131,6 +139,8 @@ function renderStats() {
     </div>`;
   });
   allStatsContainer.innerHTML = allStatsHTML; // Single DOM update
+  
+  domElements.updateStatus.innerText = updateStatusRangeText;
 }
 
 function calculateLeastFrequent() {
