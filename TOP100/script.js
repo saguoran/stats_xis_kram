@@ -44,7 +44,7 @@ async function loadJSON() {
 }
 
 function numbersCounter(start,end) {
-  if(start>end){
+  if(start>end&&start>=1&&end<=100){
     // console.log("开始期数必须小于等于结束期数,他们都必须大于0");
     rangeValidationText.style.display = 'block';
     rangeValidationText.innerText = "错误输入:开始期数要≤结束期数,他们都要>0";
@@ -148,7 +148,7 @@ async function initializeApp() {
     console.log("Starting...");
     await loadJSON();
     // 1. Kick off the heavy calculations
-    numbersCounter(50); 
+    numbersCounter(1,50); 
     renderStats();
     console.log("Counter finished");
     // 2. Give the browser one "breath" (frame) to render the new HTML
