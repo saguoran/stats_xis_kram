@@ -57,7 +57,7 @@ function numbersCounter(start,end) {
   }else{
     rangeValidationText.style.display = 'none';
   }
-  updateStatusRangeText = `到${start}-${end}期`;
+  updateStatusRangeText = `到${start}-${end}期(${data[start-1].date}-${data[end-1].date})`;
   domElements.updateStatus.innerText = '中';
   end = Number(end) || data.length;
   const slice = data.slice(start-1, end);
