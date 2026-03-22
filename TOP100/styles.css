@@ -140,34 +140,28 @@ body {
 }
 
 input[type="number"] {
-    width: 80px;
-    height: 60px;
     padding: 4px;
-    margin: 0 8px;
     border: 1px solid var(--gray-4);
     border-radius: 4px;
-    font-weight: bold;
-    font-size: x-large;
-}
-
-
-input[type="button"], input[type="submit"],button {
-    width: 80px;
-    height: 60px;
-    padding: 4px;
-    margin: 4px 8px;
-    border: 1px solid var(--gray-4);
-    border-radius: 4px;
-    background-color: var(--blue-6);
-    color: white;
     font-weight: bold;
     font-size: large;
 }
 
 
+input[type="button"], input[type="submit"],button {
+    padding: 10px;
+    border: 1px solid var(--gray-4);
+    border-radius: 4px;
+    background-color: var(--blue-6);
+    color: white;
+    font-weight: bold;
+    font-size: medium;
+}
+
+
 button.activate{
-    border-color: var(--jungle-6);
-    border-width: 2px;
+    border-color: var(--teal-7);
+    border-width: 3px;
 }
 
 small{

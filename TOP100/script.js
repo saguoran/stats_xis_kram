@@ -1,7 +1,32 @@
 console.log("script loaded");
-
+const domElements = {
+  displayHongKongButton: document.getElementById('type-hongkong'),
+  displayMacaoButton: document.getElementById('type-macao'),
+  sortByNumButton: document.getElementById('sort-by-num'),
+  sortByCountButton: document.getElementById('sort-by-count'),
+  updateStatus: document.getElementById('update-status'),
+}
 const DATA_PATH = "../marksix_data/top100.json";
 // const DATA_PATH = "../marksix_data/latest.json";
+const dataDict = { HongKong:null,  Macao: null};
+let dataType = "HongKong"; // default data type
+function setDataDict(type) {
+  if(!type) {
+    dataType= "香港";
+    data = dataDict.HongKong;
+    domElements.displayHongKongButton.classList.add("activate");
+    domElements.displayMacaoButton.classList.remove("activate");
+  } else {
+    dataType= "澳门";
+    data = dataDict.Macao;    
+    domElements.displayMacaoButton.classList.add("activate");
+    domElements.displayHongKongButton.classList.remove("activate");
+  }
+    buildHtmlForDatalist();
+    // 1. Kick off the heavy calculations
+    numbersCounter(1,50); 
+    renderStats();
+}
 let data = [];
 let snoEntries = null;
 let allEntries = null;
@@ -11,20 +36,44 @@ const SortType = {
   NUMBER: "number",
   COUNT: "count",
 };
-const domElements = {
-  sortByNumButton: document.getElementById('sort-by-num'),
-  sortByCountButton: document.getElementById('sort-by-count'),
-  updateStatus: document.getElementById('update-status'),
-}
+
 let updateStatusRangeText = null;
 let sortingType = SortType.NUMBER; // default sort by number
 let sortingRemoveStyle = _=>domElements.sortByNumButton.classList.remove("activate");
 const rangeValidationText = document.getElementById('range-validation');
-async function loadJSON() {
-  const res = await fetch(DATA_PATH);
-  data = await res.json();
-  console.log("Data loaded:");
-  const dataList = document.getElementById("data-list");
+async function getMacaoData() {
+  const today = new Date();
+  const year = today.getFullYear();
+  try {
+     const res = await fetch(`https://history.macaumarksix.com/history/macaujc2/y/${year}`);
+     const macaoData = (await res.json()).data.slice(0, 100);
+    //  console.log(macaoData);
+     dataDict.Macao = macaoData.map(item => ({
+      id: item.expect,
+      date: item.openTime,
+      no: item.openCode.split(",").slice(0,6),
+      sno: item.openCode.split(",")[6],
+    }));
+    // console.log(dataDict.Macao);
+  } catch (error) {    
+    console.error(err);
+  }
+ 
+}
+
+async function loadHongKongData() {
+  try {
+    const res = await fetch(DATA_PATH);
+    dataDict.HongKong = await res.json();
+
+    console.log("Data loaded:");
+  } catch (error) {    
+    console.error(err);
+  }
+}
+
+function buildHtmlForDatalist() {
+   const dataList = document.getElementById("data-list");
   let allRowsHTML = ""; // Create a temporary string
 
   data.forEach((item, index) => {
@@ -41,7 +90,6 @@ async function loadJSON() {
       <div style='flex:1;' class='sno'>${item.sno}</div>
     </div>`;
   });
-
   // Update the DOM only ONCE (very fast)
   dataList.innerHTML = allRowsHTML;
 }
@@ -156,10 +204,11 @@ function calculateLeastFrequent() {
 async function initializeApp() {
   try {
     console.log("Starting...");
-    await loadJSON();
-    // 1. Kick off the heavy calculations
-    numbersCounter(1,50); 
-    renderStats();
+    await loadHongKongData();
+    await getMacaoData();
+    // setDataDict("HongKong");
+    setDataDict("Macao");
+  
     console.log("Counter finished");
     // 2. Give the browser one "breath" (frame) to render the new HTML
     // before taking away the white curtain.

@@ -28,6 +28,9 @@
     </div>
 
     <div id="app-content">
+          <button type="button" onclick="setDataDict(0); buildHtmlForDatalist();" id="type-hongkong">香港</button>
+            <button type="button" onclick="setDataDict(1); buildHtmlForDatalist();" id="type-macao" class="activate">澳门</button>
+
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="openSection('stats', this)">
                 <span>📈</span>
@@ -40,7 +43,8 @@
         </nav>
 
         <div id="stats" class="tab-content active">
-            <h1>统计</h1>
+            <h1>统计</h1> 
+          
             <form action="javascript:void(0);"
                 onsubmit="numbersCounter(document.getElementById('num-start').value,document.getElementById('num-end').value);renderStats();"
                 class="header">
