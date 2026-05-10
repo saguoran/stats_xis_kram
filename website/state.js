@@ -242,7 +242,7 @@ function shouldNotFetchMarkSixData() {
     // if data is not available in state, do fetch
     state.datasets.HongKong.data &&
     // if the first result id isn't the same as the last one, do fetch
-    state.datasets.HongKong.lastResultId === state.datasets.HongKong.data[0].id
+    state.datasets.HongKong.lastResultId === state.datasets.HongKong.data[0]?.id
   );
 }
 
