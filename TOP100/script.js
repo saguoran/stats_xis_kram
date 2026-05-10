@@ -7,7 +7,6 @@ const domElements = {
   updateStatus: document.getElementById('update-status'),
 }
 const DATA_PATH = "../marksix_data/top100.json";
-// const DATA_PATH = "../marksix_data/latest.json";
 const dataDict = { HongKong:null,  Macao: null};
 let dataType = "HongKong"; // default data type
 function setDataDict(type) {
@@ -206,8 +205,8 @@ async function initializeApp() {
     console.log("Starting...");
     await loadHongKongData();
     await getMacaoData();
-    // setDataDict("HongKong");
-    setDataDict("Macao");
+    setDataDict("HongKong");
+    // setDataDict("Macao");
   
     console.log("Counter finished");
     // 2. Give the browser one "breath" (frame) to render the new HTML
