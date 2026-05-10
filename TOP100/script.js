@@ -1,0 +1,245 @@
+
+const domElements = {
+  displayHongKongButton: document.getElementById('type-hongkong'),
+  displayMacaoButton: document.getElementById('type-macao'),
+  sortByNumButton: document.getElementById('sort-by-num'),
+  sortByCountButton: document.getElementById('sort-by-count'),
+  updateStatus: document.getElementById('update-status'),
+}
+const DATA_PATH = "../marksix_data/top100.json";
+const dataDict = { HongKong:null,  Macao: null};
+let dataType = "HongKong"; // default data type
+function setDataDict(type) {
+  if(!type) {
+    dataType= "香港";
+    data = dataDict.HongKong;
+    domElements.displayHongKongButton.classList.add("activate");
+    domElements.displayMacaoButton.classList.remove("activate");
+  } else {
+    dataType= "澳门";
+    data = dataDict.Macao;    
+    domElements.displayMacaoButton.classList.add("activate");
+    domElements.displayHongKongButton.classList.remove("activate");
+  }
+    buildHtmlForDatalist();
+    // 1. Kick off the heavy calculations
+    numbersCounter(1,50); 
+    renderStats();
+}
+let data = [];
+let snoEntries = null;
+let allEntries = null;
+let leastFrequentNumbers = null;
+
+const SortType = {
+  NUMBER: "number",
+  COUNT: "count",
+};
+
+let updateStatusRangeText = null;
+let sortingType = SortType.NUMBER; // default sort by number
+let sortingRemoveStyle = _=>domElements.sortByNumButton.classList.remove("activate");
+const rangeValidationText = document.getElementById('range-validation');
+async function getMacaoData() {
+  const today = new Date();
+  const year = today.getFullYear();
+  try {
+     const res = await fetch(`https://history.macaumarksix.com/history/macaujc2/y/${year}`);
+     const macaoData = (await res.json()).data.slice(0, 100);
+    //  
+     dataDict.Macao = macaoData.map(item => ({
+      id: item.expect,
+      date: item.openTime,
+      no: item.openCode.split(",").slice(0,6),
+      sno: item.openCode.split(",")[6],
+    }));
+    // 
+  } catch (error) {    
+    console.error(err);
+  }
+ 
+}
+
+async function loadHongKongData() {
+  try {
+    const res = await fetch(DATA_PATH);
+    dataDict.HongKong = await res.json();
+
+    
+  } catch (error) {    
+    console.error(err);
+  }
+}
+
+function buildHtmlForDatalist() {
+   const dataList = document.getElementById("data-list");
+  let allRowsHTML = ""; // Create a temporary string
+
+  data.forEach((item, index) => {
+    item.sno = Number(item.sno);
+    const noList = item.no.map((n) => `<div>${n}</div>`).join("");
+
+    // Build the string in memory (fast)
+    allRowsHTML += `
+    <div class="result-row header">
+      <div style='flex:1;'>${index + 1}.</div>
+      <div style='flex:2;'>${item.id}</div>
+      <div style='flex:4;'>${item.date}</div>
+      <div style='flex:6;' class='no-list'>${noList}</div>
+      <div style='flex:1;' class='sno'>${item.sno}</div>
+    </div>`;
+  });
+  // Update the DOM only ONCE (very fast)
+  dataList.innerHTML = allRowsHTML;
+}
+
+function numbersCounter(start,end) {
+  start=parseInt(start);
+  end=parseInt(end);
+  if(start>end||start<1||end>100){
+    // 
+    rangeValidationText.style.display = 'block';
+    rangeValidationText.innerText = "错误输入:开始期数要≤结束期数,他们都要>0";
+    return;
+  }else{
+    rangeValidationText.style.display = 'none';
+  }
+  updateStatusRangeText = `到${start}-${end}期(${data[start-1].date}-${data[end-1].date})`;
+  domElements.updateStatus.innerText = '中';
+  end = Number(end) || data.length;
+  const slice = data.slice(start-1, end);
+
+  const snoObj = {};
+  const allObj = {};
+  for (const item of slice) {
+    item.sno = parseInt(item.sno);
+    snoObj[item.sno] = (snoObj[item.sno] || 0) + 1;
+    allObj[item.sno] = (allObj[item.sno] || 0) + 1;
+    for (let n of item.no){
+      n = parseInt(n);
+       allObj[n] = (allObj[n] || 0) + 1;
+      }
+  }
+
+  // ensure keys 1..49 exist and sort numerically
+  const makeEntries = (obj) => {
+    for (let i = 1; i <= 49; i++) if (!(i in obj)) obj[i] = 0;
+    return Object.keys(obj).reduce((acc, a,b) => {
+      acc.push([parseInt(a), obj[a]]);
+      return acc;
+    }, []);
+  };
+
+  snoEntries = makeEntries(snoObj);
+  allEntries = makeEntries(allObj);
+
+  // 
+  // 
+  // 
+  
+}
+
+function sortByNumber(entries) {
+  entries.sort((a, b) => a[0] - b[0]);
+}
+function sortByCount(entries) {
+  entries.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+} 
+
+function renderStats() {
+  // 
+  sortingRemoveStyle();
+  if(sortingType === SortType.NUMBER) {
+    sortByNumber(snoEntries);
+    sortByNumber(allEntries);
+    domElements.sortByNumButton.classList.add("activate");
+    sortingRemoveStyle = _=>domElements.sortByNumButton.classList.remove("activate");
+  }
+  else if(sortingType === SortType.COUNT) {
+    sortByCount(snoEntries);
+    sortByCount(allEntries);    
+    domElements.sortByCountButton.classList.add("activate");
+    sortingRemoveStyle = _=>domElements.sortByCountButton.classList.remove("activate");
+  }
+    // 1. Process SNO Stats
+  const statsContainer = document.getElementById("sno-stats");
+  let snoHTML = ""; // Accumulator string
+
+  snoEntries.forEach(([num, count]) => {
+    snoHTML += `
+    <div class="data-row header">
+      <div>${num}</div>
+      <div>${count}</div>
+    </div>`;
+  });
+  statsContainer.innerHTML = snoHTML; // Single DOM update
+
+  // 2. Process AllStats
+  const allStatsContainer = document.getElementById("nosno-stats");
+  let allStatsHTML = ""; // Accumulator string
+
+  allEntries.forEach(([num, count]) => {
+    allStatsHTML += `
+    <div class="data-row header">
+      <div>${num}</div>
+      <div>${count}</div>
+    </div>`;
+  });
+  allStatsContainer.innerHTML = allStatsHTML; // Single DOM update
+  
+  domElements.updateStatus.innerText = updateStatusRangeText;
+}
+
+function calculateLeastFrequent() {
+  const startingIndex = 10;
+  let head10 = data.slice(0, startingIndex);
+  const allObj = {};
+  for (const item of head10) {
+    allObj[item.sno] = (allObj[item.sno] || 0) + 1;
+    for (const n of item.no) allObj[n] = (allObj[n] || 0) + 1;
+  }
+
+}
+async function initializeApp() {
+  try {
+    
+    await loadHongKongData();
+    await getMacaoData();
+    setDataDict("HongKong");
+    // setDataDict("Macao");
+  
+    
+    // 2. Give the browser one "breath" (frame) to render the new HTML
+    // before taking away the white curtain.
+    requestAnimationFrame(() => {
+      const loader = document.getElementById('test');
+      setTimeout(() => {
+        loader.classList.remove('active');
+        
+      }, 500); // 0.5s splash screen feel
+    });
+
+  } catch (e) {
+    console.error("Critical Failure:", e);
+  }
+}
+window.onload = initializeApp;
+
+function openSection(sectionId, element) {
+  // 1. Hide all content sections
+  document.querySelectorAll(".tab-content").forEach((content) => {
+    content.classList.remove("active");
+  });
+
+  // 2. Remove active state from all buttons
+  document.querySelectorAll(".nav-item").forEach((button) => {
+    button.classList.remove("active");
+  });
+
+  // 3. Show the chosen section and highlight the button
+  document.getElementById(sectionId).classList.add("active");
+  element.classList.add("active");
+
+  // 4. Optional: Scroll to top when switching
+  window.scrollTo(0, 0);
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./loading.css">
+</head>
+
+<body>
+
+    <div id="test" class="loader-overlay active">
+        <div class="loader-container">
+            <svg viewBox="0 0 220 220" class="loader-svg">
+                <circle cx="110" cy="110" r="50" fill="none" stroke="cyan" stroke-width="1" />
+                <g class="inner-hex-spin">
+                    <polygon points="110,60 153.3,135 66.7,135" fill="none" stroke="purple" stroke-width="1" />
+                    <polygon points="110,160 66.7,85 153.3,85" fill="none" stroke="pink" stroke-width="1" />
+                </g>
+                <g class="outer-hex-spin">
+                    <polygon points="110,10 196.6,160 23.4,160" fill="none" stroke="orange" stroke-width="1" />
+                    <polygon points="110,210 23.4,60 196.6,60" fill="none" stroke="green" stroke-width="1" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div id="app-content">
+          <button type="button" onclick="setDataDict(0); buildHtmlForDatalist();" id="type-hongkong">香港</button>
+            <button type="button" onclick="setDataDict(1); buildHtmlForDatalist();" id="type-macao" class="activate">澳门</button>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="openSection('stats', this)">
+                <span>📈</span>
+                <small>Stats</small>
+            </button>
+            <button class="nav-item" onclick="openSection('results', this)">
+                <span>📊</span>
+                <small>Results</small>
+            </button>
+        </nav>
+
+        <div id="stats" class="tab-content active">
+            <h1>统计</h1> 
+          
+            <form action="javascript:void(0);"
+                onsubmit="numbersCounter(document.getElementById('num-start').value,document.getElementById('num-end').value);renderStats();"
+                class="header">
+                从近<input inputmode="decimal" pattern="[0-9]*" type="number" id="num-start" name="num-start" min="1" required
+                    max="100" value="1">到<input inputmode="decimal" pattern="[0-9]*" type="number" id="num-end" required
+                    name="num-end" min="1" max="100" value="50">/100期
+                <input type="submit" value="更新">
+                <small id="range-validation"></small>
+            </form>
+            <h2>更新<span id="update-status"></span></h2>
+            <h1>排序</h1>
+            <button type="button" onclick="sortingType = SortType.NUMBER;renderStats();" class="activate"
+                id="sort-by-num">按数字</button>
+            <button type="button" onclick="sortingType = SortType.COUNT;renderStats();" id="sort-by-count">按次数</button>
+            <h2>特</h2>
+            <div id="sno-stats"></div>
+            <h2>平特</h2>
+            <div id="nosno-stats"></div>
+        </div>
+        <div id="results" class="tab-content ">
+            <h1>近100期</h1>
+            <div id="data-list"></div>
+        </div>
+        <div class="tab-content active">
+        </div>
+    </div>
+
+    <!-- simulation -->
+    <section id="data-section"></section>
+    <section id="counter-section"></section>
+    <script type="module" src="./state.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./script.js"></script>
+</body>
+
+</html>
