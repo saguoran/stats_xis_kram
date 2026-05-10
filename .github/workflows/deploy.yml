@@ -1,0 +1,27 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main  # Trigger only when pushing to your production line
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Remove Console Logs
+        # This regex finds 'console.log(...);' and removes it
+        # We use 'sed' because it's fast and standard on Arch/Linux
+        run: |
+          find . -name "*.js" -exec sed -i -E 's/console\.log\(.*\);?//g' {} +
+          echo "Cleaned all console.logs from JS files."
+
+      - name: Deploy to Prod Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .        # Deploy the current folder
+          branch: prod     # Push the 'cleaned' code to the prod branch
+          token: ${{ secrets.GITHUB_TOKEN }}

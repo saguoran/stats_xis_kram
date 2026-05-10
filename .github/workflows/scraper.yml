@@ -3,7 +3,7 @@ name: Playwright Scraper Bot
 on:
   schedule:
     # 9:32 PM HKT (13:32 UTC) on Tue, Thu, Sat
-    - cron: '32 13 * * 2,4,6'
+    - cron: '32 13 * * 2,4,6,7'
   workflow_dispatch: # Allows you to run it manually for testing
 
 jobs:
