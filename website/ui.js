@@ -206,15 +206,17 @@ function setDataByPosVectorOrLimitCount({actionVector=0, index=state.filters.ind
   if (start <= 0) {
     _('[data-pos-vector="1"]').disable();
     _("[data-meta-latest]").el.textContent = "今期";
-  } else {
-    _('[data-pos-vector="1"]').enable();
-  }
-  if (end >= getData().data.length) {
+    _("[data-meta-latest]").el.style.display = 'block';
+  }else if (end >= getData().data.length) {
     _('[data-pos-vector="-1"]').disable();
-    _("[data-meta-latest]").el.textContent = `最旧${slicedData.length}期`;
+    _("[data-meta-latest]").el.textContent = `最旧${end-start}期`;
+    _("[data-meta-latest]").el.style.display = 'block';
     
   } else {
-    _('[data-pos-vector="-1"]').enable();
+    _('[data-pos-vector="1"]').enable();
+    _('[data-pos-vector="-1"]').enable();  
+    _("[data-meta-latest]").el.textContent = "";
+    _("[data-meta-latest]").el.style.display = 'none';
   }
   setAnalysisData(getData().data, ...[start, end]);
   state.filters.index = start;
