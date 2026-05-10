@@ -1,0 +1,379 @@
+@import "https://unpkg.com/open-props";
+
+body {
+    font-family:
+        /* Mac/iOS */
+        "PingFang SC", "Hiragino Sans GB",
+        /* Windows */
+        "Microsoft YaHei", "微软雅黑",
+        /* Linux/Android */
+        "Source Han Sans CN", "Noto Sans CJK SC",
+        /* Fallbacks */
+        sans-serif;
+    background-color: var(--surface-1);
+    color: var(--gray-8);
+    margin: 5px;
+}
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+#test {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--gray-1);
+    z-index: 10000;
+    display: none;
+    /* Hidden by default... */
+    justify-content: center;
+    align-items: center;
+}
+
+#test.active {
+    display: flex;
+    /* ...but visible because of the 'active' class in HTML */
+}
+
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 20px;
+}
+
+.nav-item.active {
+    color: #007bff;
+    /* Highlight color */
+}
+
+.tab-content {
+    display: none;
+    /* Hide sections by default */
+    padding-bottom: 70px;
+    /* Prevent content from being hidden behind the bar */
+    /* background-color: var(--orange-6); */
+}
+
+.tab-content.active {
+    display: block;
+}
+
+#sno-stats,
+#nosno-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.data-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 2px 0;
+    padding: 2px;
+    width: 30px;
+    justify-content: space-evenly;
+    align-items: center;
+    border: #007bff 1px solid;
+    border-radius: 2px;
+    color: var(--stone-10);
+}
+
+.data-row:nth-child(odd) {
+    background-color: var(--gray-2);
+}
+
+
+.header {
+    font-weight: bold;
+}
+
+#data-list {
+    display: flex;
+    gap: 4px;
+    flex-flow: column wrap;
+    justify-content: start;
+    align-items: start;
+}
+
+#data-list>div:nth-child(odd) {
+    border-bottom: red 1px solid;
+}
+
+.result-row {
+    display: flex;
+    gap: 8px;
+    margin: 2px 0;
+    padding: 2px 2px;
+    width: max(400px, 100%);
+    align-items: center;
+    justify-content: start;
+    border-bottom: #007bff 1px solid;
+    color: var(--stone-10);
+}
+
+
+
+.no-list {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    justify-content: space-between;
+    border: #007bff 1px solid;
+    border-radius: 2px;
+    padding: 0 4px;
+}
+
+.no-list div:nth-child(odd) {
+    background-color: var(--gray-2);
+}
+
+.sno {
+    color: var(--gray-2);
+    padding: 4px 4px;
+    text-align: center;
+    background-color: var(--orange-12);
+    border-radius: 5px;
+}
+
+input[type="number"] {
+    padding: 4px;
+    border: 1px solid var(--gray-4);
+    border-radius: 4px;
+    font-size: large;
+}
+
+
+input[type="button"],
+input[type="submit"],
+button {
+    line-height: 1;
+    padding: 10px;
+    border: 1px solid var(--gray-4);
+    border-radius: 4px;
+    background-color: var(--blue-6);
+    color: var(--gray-1);
+    font-size: medium;
+}
+
+
+button.activate {
+    border-color: var(--teal-7);
+    border-width: 3px;
+}
+
+small {
+    font-size: small;
+    color: var(--red-9);
+}
+
+
+.grid-container {
+    display: grid;
+    /* Create 7 equal columns */
+    grid-template-columns: repeat(7, 1fr);
+    /* Create 7 equal rows */
+    grid-template-rows: repeat(7, 1fr);
+
+    /* Space between the squares */
+    gap: 4px;
+
+    min-width: 300px;
+    /* width: max(300px, 100%);
+    height: 500px; */
+
+    margin: 10px;
+}
+
+.grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-family: sans-serif;
+    border: #007bff 1px solid;
+    border-radius: 4px;
+    display: flex;
+    padding: 4px 0;
+    font-size: x-large;
+    flex-direction: column;
+}
+
+.grid-item:nth-child(even) {
+    background-color: var(--gray-3);
+}
+
+.grid-item>strong {
+    display: flex;
+    justify-content: center;
+    /* Horizontal centering */
+    align-items: center;
+    /* Vertical centering */
+    background-color: var(--stone-9);
+    color: var(--gray-1);
+    /* border: 2px solid var(--gray-6); */
+    width: 40px;
+    height: 40px;
+    padding: 18px;
+    border-radius: 50%;
+    /* box-shadow: var(--shadow-2); */
+}
+.grid-item div {
+    font-weight: bolder;
+    color: var(--gray-9)
+}
+.balls{
+    font-size: large;
+    font-weight: bold;
+}
+.ball{
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    background: var(--blue-2);
+    margin: 1px;
+    border-radius: 50%;
+    color: var(--gray-8);
+    border: var(--blue-4) 2px solid;
+}
+.special {
+    color: var(--gray-2);
+    background-color: var(--orange-11);
+    border: var(--orange-9) 2px solid;
+}
+
+h2[data-scheduleDate]{
+    color: var(--gray-9);
+}
+
+
+#result-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#result-list .result-row div:nth-child(4) {
+    display: grid;
+    /* Create 7 equal columns */
+    grid-template-columns: repeat(6, 1fr);
+    /* Create 7 equal rows */
+    grid-template-rows: 1fr;
+    text-align: center;
+    gap: 2px;
+}
+
+#result-list .result-row div:nth-child(4) span {
+    padding: 0 1px;
+    font-weight: bold;
+}
+
+#result-list .result-row:nth-child(odd) div:nth-child(4) span {
+    background-color: var(--blue-1);
+}
+
+#result-list .result-row:nth-child(even) div:nth-child(4) span {
+    background-color: var(--green-1);
+}
+
+#result-list .result-row div:nth-child(5) {
+    text-align: center;
+    color: var(--gray-1);
+    font-weight: bold;
+    background-color: var(--orange-12);
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0px;
+    /* Gives the button more "clicking" room */
+    cursor: pointer;
+}
+
+.icon-btn svg {
+    /* Adjust these numbers until it looks right to you */
+    width: 40px;
+    height: 40px;
+    /* This ensures the icon color matches your text color automatically */
+    fill: currentColor;
+}
+
+h1 {
+    margin: 0px;
+    padding: 0;
+}
+
+button.inactive {
+    border: none;
+    background-color: var(--gray-5);
+}
+
+.limit-range {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+}
+
+#limit-range {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-highlight='true']{
+    border: var(--pink-7) solid 3px !important;
+}
+[data-highlight]{
+    border: 3px solid transparent;
+    margin-top: 2px;
+    transition: all 0.1s ease-in-out;
+}
+/* make SVG ignore pointer events */
+button svg {
+  pointer-events: none;
+}
+
+[data-meta-latest]{
+    font-weight: bold;
+    color: var(--gray-1);
+    background-color: var(--red-10);
+    padding: 2px;
+    border-radius: 4px;
+}
