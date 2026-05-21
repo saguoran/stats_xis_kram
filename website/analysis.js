@@ -37,8 +37,8 @@ export function setAnalysisData(data, start, end) {
   snoEntries = makeEntries(snoObj);
   allEntries = makeEntries(allObj);
   // console.log("SNO:", snoObj);
-  // console.log("SNO counts:", snoEntries);
-  // console.log("All counts:", allEntries);
+  console.log("SNO counts:", snoEntries);
+  console.log("All counts:", allEntries);
   return { snoEntries, allEntries };
 }
 

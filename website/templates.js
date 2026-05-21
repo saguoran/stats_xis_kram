@@ -230,12 +230,12 @@ export function uiMap(page) {
   </section>     
             <h2 data-scheduled-date="${metadata.cnName}">下期时间👉🏻 <span>${getNextScheduledDate()}</span></h2>
             <p><a ${_a.data_highlight} id="page-switch" href="?page=datalist">过去结果</a></p>
-                <div class="meta-info">数据总量👉🏻 ${metadata.data?.length || 0}期</div>
+                <div class="meta-info">数据总量👉🏻 ${metadata.data?.length || 0}期 <button id='reset'>重置设定</button> </div>
                 <div class="controls-container">
         <!-- limit Group -->
         <div id="limit-form" class="button-group">
             <span>分析</span>
-            ${[20, 30, 40, 50, 60]
+            ${[20, 30, 40, 50, 60,70,80,90,100, 150, 200]
               .map(
                 (num) => `
                 <button type="button" data-limit="${num}" 
