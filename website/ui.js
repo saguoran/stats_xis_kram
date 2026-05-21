@@ -32,11 +32,11 @@ import {
 } from "./templates.js";
 
 // Toggle this to false when you want to see logs in Dev
-const isProduction = true; 
+// const isProduction = true; 
 
-if (isProduction) {
-    console.log = () => {}; // This "shorts out" all logs globally
-}
+// if (isProduction) {
+//     console.log = () => {}; // This "shorts out" all logs globally
+// }
 
 let lastHightedElement;
 export async function navigateTo(targetPage, targetData = null) {
@@ -74,13 +74,11 @@ function getRoute() {
 }
 
 function resetFilter() {
-  state.filters.index = 0;
-  state.filters.limitCount = 50;
-  let newLimitCount = state.filters.limitCount;
+  state.filters = {...defaultState.filters};
   let [start, end] = updateDataOffset(
     state.filters.index,
     0,
-    newLimitCount,
+    state.filters.limitCount,
     getData().data.length,
   );
 }
@@ -126,8 +124,16 @@ document.addEventListener("click", (e) => {
     );
   }
   let formUpdated = true;
-  if (_(e.target).matchesAttr(_a.data_sort, "reversed")) {
-    renderDataGrid();
+  if(e.target.id==="reset"){
+    resetFilter();
+    _els().sortByCountBtn.deactivate();    
+    _els().sortByNumberBtn.activate();
+    _(`[data-limit].active`).deactivate();
+    _(`[data-limit='50']`).activate();
+    _(`[data-sort="reversed"]`).el.textContent = renderReverseBtnText();
+    setDataByPosVectorOrLimitCount();
+  }
+  else if (_(e.target).matchesAttr(_a.data_sort, "reversed")) {
     state.filters.reversed = !state.filters.reversed;
     e.target.textContent = renderReverseBtnText();
   } else if (
@@ -149,16 +155,12 @@ document.addEventListener("click", (e) => {
     e.target.hasAttribute(_a.data_limit) &&
     state.filters.limitCount != e.target.getAttribute(_a.data_limit)
   ) {
-    // 
     // inactive the previous selected limited count button
-    const prevSelectedBtn = _(
-      `button[data-limit='${state.filters.limitCount}']`,
-    );
     try {
-      let newLimitCount = parseInt(e.target.getAttribute(_a.data_limit));
-      
+      let newLimitCount = parseInt(e.target.getAttribute(_a.data_limit));      
       setDataByPosVectorOrLimitCount({limitCount:newLimitCount});
-      prevSelectedBtn.deactivate();
+      // prev Selected data-limit Btn
+      _(`[data-limit].active`).deactivate();
       // active the new limit button
       state.filters.limitCount = newLimitCount;
       _(e.target).activate();
@@ -199,7 +201,6 @@ function setDataByPosVectorOrLimitCount({actionVector=0, index=state.filters.ind
     limitCount,
     getData().data.length,
   );
-  
   
   
   
