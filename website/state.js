@@ -175,11 +175,12 @@ function invalidMarkSixScheduledDates() {
   // Check if scheduledDates exist
   const scheduledDate = state.datasets.HongKong.scheduledDates;
   if (!scheduledDate.year) return false;
-
+  
   // Compare current month and year with stored scheduled dates
   const today = new Date();
   return (
     today.getMonth() + 1 === scheduledDate.month &&
+    today.getDate() <= scheduledDate.dates[scheduledDate.dates.length - 1] &&
     today.getFullYear() === scheduledDate.year
   );
 }
