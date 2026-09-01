@@ -155,7 +155,7 @@ async function fetchLatestMarkSixResult() {
         ),
     );
     // try to sync data
-    let firstOne = state.datasets.HongKong.data[0];
+    let firstOne = data[0];
     const i = data.findIndex(x => x.id === firstOne.id);
     if (i !== -1) {
       state.datasets.HongKong.data = [...data.slice(0, i), ...state.datasets.HongKong.data];
@@ -393,7 +393,7 @@ export async function syncMarkSixData(redirectPage, render) {
   loadFromStorage();
 
   // validate schedule dates
-  const doFetchDates = !state.datasets.HongKong.scheduledDatesList.length|!today_is_not_last_date_in_dates_list();
+  const doFetchDates = !state.datasets.HongKong.scheduledDatesList.length||!today_is_not_last_date_in_dates_list();
   console.log("shouldFetchDates", doFetchDates);
   if (doFetchDates) {
     await runStep(
