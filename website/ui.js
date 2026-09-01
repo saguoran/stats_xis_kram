@@ -222,10 +222,12 @@ function setDataByPosVectorOrLimitCount({actionVector=0, index=state.filters.ind
   setAnalysisData(getData().data, ...[start, end]);
   state.filters.index = start;
     _("#limit-range").el.innerHTML = renderLimitedRangeText();
-    // renderDataGrid();
 }
 
 function renderDataGrid(){
+  const hotCount = snoEntries.filter(x=>x[1]>0).length;
+    _("span.special-count").el.textContent = `(旺${hotCount})(冷${49-hotCount})`;
+
       _("div[data-analysis='sno']").el.innerHTML = renderDataAnalysis(snoEntries);
     _("div[data-analysis='all']").el.innerHTML = renderDataAnalysis(allEntries);
 }
@@ -233,10 +235,6 @@ function renderDataGrid(){
 function syncUrlWithDefaults() {
   const params = new URLSearchParams(window.location.search);
   let updated = false;
-
-  // reset filters for test
-  // state.filters.limitCount = 50;
-  // state.filters.offset = 0;
 
   if (state.currentPage === PAGES.analysis) {
     // set params  by default value if missing

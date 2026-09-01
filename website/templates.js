@@ -197,6 +197,7 @@ export function uiMap(page) {
       const metadata = getData(state.activeDatasetName);
       const dataLength = metadata.data?.length || 0;
       console.log(allEntries, snoEntries, state);
+        const hotCount = snoEntries.filter(x=>x[1]>0).length;
       const latest = metadata.data[0];
       return `
             <div class="page">
@@ -267,10 +268,10 @@ export function uiMap(page) {
             <button type="button" data-sort="sortByCount" class="${state.filters.orderBy === "count" ? "active" : "inactive"}">按次数</button>
         </div>
     </div>    
-                      <h1>特</h1>
+                      <h1>特 <span class="special-count">(旺${hotCount})(冷${49-hotCount})</span> </h1>
                   <div class="grid-container" data-analysis="sno" >${renderDataAnalysis(snoEntries)}
                 </div>
-                      <h1>平特</h1>
+                      <h1>平特 </h1>
                       <div class="grid-container" data-analysis="all" >${renderDataAnalysis(allEntries)}
                 </div>
             </div>
@@ -278,7 +279,7 @@ export function uiMap(page) {
     }
     case PAGES.datalist:
       return `
-            <div class="page">
+            <div class="page" style="padding: 0  0.5rem 20rem 0.5rem;">
                 <h1>${getData(state.activeDatasetName).cnName}過去攪珠結果</h1>
                 <a id="page-switch" href="?page=analysis">数据统计</a>
                 <div class="meta-info">数据总量：${getData(state.activeDatasetName).data?.length || 0}</div>
