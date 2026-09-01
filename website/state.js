@@ -17,6 +17,7 @@ export const DATASETS = {
     /** to keep the stored data up-to-date, always fetch and set the latest result Id on DOMContentLoaded */
     lastResultId: null,
     /** latest scheduled Dates  */
+    scheduledDatesList: [], //[[year, month, date]]
     scheduledDates: {
       year: null,
       /** the month number 7 July, new Date(year, month-1, date) */
@@ -97,15 +98,15 @@ export function loadFromStorage() {
   return state;
 }
 
-function validateOldData(){
+function validateOldData() {
   // // see if we have the schedule dates 
   // if(!state.datasets.HongKong.scheduledDates.year)
   // return false;
   // first we have to have data
-  if(state.datasets.HongKong.data?.length<100)
-  return false;
+  if (state.datasets.HongKong.data?.length < 100)
+    return false;
   // test if we don't have the latest results
-  if(state.datasets.HongKong.latestResultDate!=new Date(state.datasets.HongKong.data[0].date)){
+  if (state.datasets.HongKong.latestResultDate != new Date(state.datasets.HongKong.data[0].date)) {
     // we need to fetch new data
     return false;
   }
@@ -123,7 +124,7 @@ async function fetchLatestMarkSixResult() {
     const raw = JSON.stringify({
       operationName: "marksixResult",
       variables: {
-        lastNDraw: 4,
+        lastNDraw: 10,
       },
       query:
         "fragment lotteryDrawsFragment on LotteryDraw {\n  id\n  year\n  no\n  openDate\n  closeDate\n  drawDate\n  status\n  snowballCode\n  snowballName_en\n  snowballName_ch\n  lotteryPool {\n    sell\n    status\n    totalInvestment\n    jackpot\n    unitBet\n    estimatedPrize\n    derivedFirstPrizeDiv\n    lotteryPrizes {\n      type\n      winningUnit\n      dividend\n    }\n  }\n  drawResult {\n    drawnNo\n    xDrawnNo\n  }\n}\n\nquery marksixResult($lastNDraw: Int, $startDate: String, $endDate: String, $drawType: LotteryDrawType) {\n  lotteryDraws(\n    lastNDraw: $lastNDraw\n    startDate: $startDate\n    endDate: $endDate\n    drawType: $drawType\n  ) {\n    ...lotteryDrawsFragment\n  }\n}",
@@ -157,7 +158,7 @@ async function fetchLatestMarkSixResult() {
     let firstOne = state.datasets.HongKong.data[0];
     const i = data.findIndex(x => x.id === firstOne.id);
     if (i !== -1) {
-      state.datasets.HongKong.data = [...data.slice(0,i),...state.datasets.HongKong.data];
+      state.datasets.HongKong.data = [...data.slice(0, i), ...state.datasets.HongKong.data];
       
       return true;
     }
@@ -169,20 +170,16 @@ async function fetchLatestMarkSixResult() {
   }
 }
 /**
- * Returns true if scheduled dates are invalid, are current (same month & year), false if fetch needed
+ * 判断今天是否是 scheduledDatesList 中的最后一个日期
  */
-function invalidMarkSixScheduledDates() {
-  // Check if scheduledDates exist
-  const scheduledDate = state.datasets.HongKong.scheduledDates;
-  if (!scheduledDate.year) return false;
-  
+function today_is_not_last_date_in_dates_list() {
   // Compare current month and year with stored scheduled dates
-  const today = new Date();
-  return (
-    today.getMonth() + 1 === scheduledDate.month &&
-    today.getDate() <= scheduledDate.dates[scheduledDate.dates.length - 1] &&
-    today.getFullYear() === scheduledDate.year
-  );
+  const today = new Date(); // For testing, replace with new Date() in production
+  
+  // find today in scheduledDatesList
+  const lastScheduleDate = state.datasets.HongKong.scheduledDatesList[state.datasets.HongKong.scheduledDatesList.length - 1];
+  const lastScheduleDateTime = new Date(lastScheduleDate[0], lastScheduleDate[1]-1, lastScheduleDate[2]);
+  return today<lastScheduleDateTime;
 }
 /**
  * @returns {Date} scheduledDates
@@ -226,13 +223,23 @@ async function fetchMarkSixScheduledDates() {
     const latestYear = data.data.item.years[data.data.item.years.length - 1];
     const latestMonth = latestYear.months[latestYear.months.length - 1];
     const resultDates = latestMonth.dates.date.map((x) => parseInt(x.value));
+    state.datasets.HongKong.scheduledDatesList = data.data.item.years.flatMap((yearData) =>
+      yearData.months.flatMap((monthData) =>
+        monthData.dates.date.map((dateData) => [
+          parseInt(yearData.year),
+          parseInt(monthData.month.value),
+          parseInt(dateData.value),
+        ])
+      )
+    );
+
     const scheduledDates = {
       year: parseInt(latestYear.year),
       month: parseInt(latestMonth.key),
       dates: resultDates,
     };
     
-  
+
 
     state.datasets.HongKong.scheduledDates = scheduledDates;
     // saveToStorage();
@@ -242,43 +249,20 @@ async function fetchMarkSixScheduledDates() {
   }
 }
 
-function setScheduledDate(){
-  state.datasets.HongKong.latestResultDate = new Date(state.datasets.HongKong.data[0].date);
-  if(state.datasets.HongKong.scheduledDates.month-1===state.datasets.HongKong.latestResultDate.getMonth()){
-    const latestResultDateIndex = state.datasets.HongKong.scheduledDates.dates.findIndex(x=>x===state.datasets.HongKong.latestResultDate.getDate());
-    state.datasets.HongKong.nextScheduledDate = new Date(state.datasets.HongKong.scheduledDates.year, state.datasets.HongKong.scheduledDates.month-1, state.datasets.HongKong.scheduledDates.dates[latestResultDateIndex+1]);
-  }else{
-    state.datasets.HongKong.nextScheduledDate = new Date(state.datasets.HongKong.scheduledDates.year, state.datasets.HongKong.scheduledDates.month-1, state.datasets.HongKong.scheduledDates.dates[0]);
-  }
-  
-}
 /** calculate the next scheduled date */
 export function getNextScheduledDate() {
-
+  const scheduledDates = state.datasets.HongKong.scheduledDatesList.map(x=>new Date(x[0], x[1]-1, x[2]));
+  const latestResultDate = new Date(state.datasets.HongKong.data[0].date);
+  const nextScheduledDate = scheduledDates.find(x => x > latestResultDate);
   const formatted = new Intl.DateTimeFormat("zh-CN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    }).format( state.datasets.HongKong.nextScheduledDate );
-    
-    return formatted;
-}
-
-/**
- * doesn't need fetch data at all
- */
-function shouldNotFetchData(){
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+  }).format(nextScheduledDate);
   
-  // Compare current month and year with stored scheduled dates
-  const today = new Date();
-  // already have the latest data
-  if(state.datasets.HongKong.data[0].date){
-
-  }
-
+  return formatted;
 }
-
 // fetchMarkSixScheduledDates();
 /**
  *  don't fetch data
@@ -292,7 +276,7 @@ function invalidMarkSixData() {
   return (
     // if data is not available in state, do fetch
     state.datasets.HongKong.data &&
-    state.datasets.HongKong.data.length >199 &&
+    state.datasets.HongKong.data.length > 199 &&
     // if the first result id isn't the same as the last one, do fetch
     state.datasets.HongKong.latestResultDate === new Date(state.datasets.HongKong.data[0]?.date)
   );
@@ -370,7 +354,7 @@ async function fetchMarkSixData() {
     state.datasets.HongKong.data = DATASETS.HongKong.data; // Ensure the dataset reference is updated
     state.activeDatasetName = "HongKong"; // Set activeData to the dataset we just fetched
     // 
-    
+
     return DATASETS.HongKong.data;
   } catch (error) {
     console.error("HTTP Fetch failed:", error);
@@ -383,7 +367,7 @@ function delay(ms) {
 
 async function runStep(render, task) {
   render();
-  await delay(100);
+  // await delay(100);
   return task();
 }
 
@@ -403,30 +387,30 @@ export async function syncMarkSixData(redirectPage, render) {
   
 
   // first status
-  await showStatus((_) => render("开始同步数据"), 200);
+  await showStatus((_) => render("开始同步数据"), 0);
 
   // get old data
   loadFromStorage();
 
   // validate schedule dates
-  const shouldFetchDates = !invalidMarkSixScheduledDates();
-  if (shouldFetchDates) {
+  const doFetchDates = !state.datasets.HongKong.scheduledDatesList.length|!today_is_not_last_date_in_dates_list();
+  
+  if (doFetchDates) {
     await runStep(
       (_) => render("在获取下期更新数据"),
       fetchMarkSixScheduledDates,
     );
   }
   const success = await runStep((_) => render("在获取最新结果"), fetchLatestMarkSixResult);
-  
+
   if(!success||state.datasets.HongKong.data.length<200){
     await runStep((_) => render("在获取前200期数据"), fetchMarkSixData);
   }
-  setScheduledDate();
 
   state.currentPage = redirectPage;
   saveToStorage();
-  await showStatus((_) => render("同步完成"), 200);
+  await showStatus((_) => render("同步完成"), 0);
 
-  // last status
+  // // last status
   
 }
