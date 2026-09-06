@@ -26,8 +26,6 @@ export const DATASETS = {
     },
     /** calculate this every time SPA init */
     latestResultDate: null,
-    /** calculate this every time SPA init */
-    nextScheduledDate: null,
   },
   Macao: {
     /** @type {string} */
@@ -124,7 +122,7 @@ async function fetchLatestMarkSixResult() {
     const raw = JSON.stringify({
       operationName: "marksixResult",
       variables: {
-        lastNDraw: 10,
+        lastNDraw: 20,
       },
       query:
         "fragment lotteryDrawsFragment on LotteryDraw {\n  id\n  year\n  no\n  openDate\n  closeDate\n  drawDate\n  status\n  snowballCode\n  snowballName_en\n  snowballName_ch\n  lotteryPool {\n    sell\n    status\n    totalInvestment\n    jackpot\n    unitBet\n    estimatedPrize\n    derivedFirstPrizeDiv\n    lotteryPrizes {\n      type\n      winningUnit\n      dividend\n    }\n  }\n  drawResult {\n    drawnNo\n    xDrawnNo\n  }\n}\n\nquery marksixResult($lastNDraw: Int, $startDate: String, $endDate: String, $drawType: LotteryDrawType) {\n  lotteryDraws(\n    lastNDraw: $lastNDraw\n    startDate: $startDate\n    endDate: $endDate\n    drawType: $drawType\n  ) {\n    ...lotteryDrawsFragment\n  }\n}",
@@ -154,9 +152,7 @@ async function fetchLatestMarkSixResult() {
           x.drawResult.xDrawnNo,
         ),
     );
-    // try to sync data
-    let firstOne = data[0];
-    const i = data.findIndex(x => x.id === firstOne.id);
+    const i = data.findIndex(x=>x.id==state.datasets.HongKong.data[0].id);
     if (i !== -1) {
       state.datasets.HongKong.data = [...data.slice(0, i), ...state.datasets.HongKong.data];
       
