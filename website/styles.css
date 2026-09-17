@@ -223,10 +223,10 @@ small {
     font-size: x-large;
     flex-direction: column;
 }
-
+/* 
 .grid-item:nth-child(even) {
-    background-color: var(--gray-3);
-}
+    background-color: var(--gray-2);
+} */
 
 .grid-item>strong {
     display: flex;
@@ -381,4 +381,94 @@ button svg {
     padding: 0  0.5rem 20rem 0.5rem; 
     width:100%;
     
+}
+
+[data-count="0"]{
+    background-color: var(--gray-1);
+    border: 2px solid var(--gray-7);
+    div{
+    color: var(--gray-8);
+}
+}
+
+
+[data-count="1"] {
+    background-color: var(--red-1);
+    border: 2px solid var(--red-7);
+    div{
+    
+    color: var(--red-7);
+}}
+[data-count="2"] {
+    background-color: var(--green-1);
+    border: 2px solid var(--green-9);
+    div{
+    
+    color: var(--green-9);
+}}
+[data-count="3"] {
+    background-color: var(--blue-1);
+    border: 2px solid var(--blue-9);
+    div{
+    
+    color: var(--blue-9);
+}}
+
+
+[data-count="4"] {
+    background-color: var(--pink-2);
+    border: 2px solid var(--pink-7);
+    div{
+    
+    color: var(--pink-7);
+}}
+
+[data-count="5"] {
+    background-color: var(--violet-2);
+    border: 2px solid var(--violet-7);
+    div{
+    
+    color: var(--violet-7);
+}}
+
+
+[data-count="6"] {
+    background-color: var(--cyan-1);
+    border: 2px solid var(--cyan-9);
+    div{
+    
+    color: var(--cyan-9);
+}}
+
+
+
+[data-count="7"] {
+    background-color: var(--teal-2);
+    border: 2px solid var(--teal-8);
+    div{
+    
+    color: var(--teal-8);
+}}
+
+[data-count="8"] {
+    background-color: var(--sand-2);
+    border: 2px solid var(--sand-7);
+    div{
+    
+    color: var(--sand-7);
+}}
+
+
+[data-count="9"] {
+    background-color: var(--blue-3);
+    border: 2px solid var(--blue-10);
+    div{
+    color: var(--blue-10);
+}}
+
+[data-count]{
+       div{
+     -webkit-text-stroke: 3px white;
+  paint-order: stroke fill;
+}
 }
