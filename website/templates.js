@@ -133,8 +133,8 @@ export const renderDataAnalysis = (entries) => {
   return `${entries
     .map(
       ([num, count]) => `
-                        <div class="grid-item">
-                             <strong>${num}</strong> <div>${count}</div> </div>`,
+                        <div class="grid-item" data-number="${num}" data-count="${count}">
+                             <strong>${num}</strong> <div class="count">${count}</div> </div>`,
     )
     .join("")}`;
 };
