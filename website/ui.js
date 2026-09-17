@@ -50,6 +50,16 @@ export async function navigateTo(targetPage, targetData = null) {
   saveToStorage(); // Save the updated state to localStorage
   // 5. Final Render
   render();
+    // set page data
+  try {
+    // let newLimitCount = state.filters.limitCount;
+    // direction=0
+    setDataByPosVectorOrLimitCount();
+    renderDataGrid();
+  } catch (error) {
+    console.error("no need to fix this error, it doesn't break the app", error);
+    resetFilter();
+  }
 }
 
 // ui.js
@@ -98,7 +108,7 @@ async function initApp() {
   }
   // set page data
   try {
-    let newLimitCount = state.filters.limitCount;
+    // let newLimitCount = state.filters.limitCount;
     // direction=0
     setDataByPosVectorOrLimitCount();
     renderDataGrid();
