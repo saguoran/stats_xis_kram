@@ -287,11 +287,9 @@ export function uiMap(page) {
                     ${getData(state.activeDatasetName)
                       .data.map(
                         (item, index) => `
-                        <div class="result-row">
-                          <div style='flex:1;'>${index + 1}.</div>
-                          <div style='flex:3;'>${item.id}</div>
-                          <div style='flex:5;'>${item.date}</div>
-                          <div style='flex:10;'>${item.no.map((n) => `<span>${n}</span>`).join("")}</div>
+                        <div class="result-row">                          
+                          <div style='flex:3;'>${index + 1}. ${item.id}, ${item.date.substring(5).replace("-", "月")}日</div>
+                          <div style='flex:5;'>${item.no.map((n) => `<span>${n}</span>`).join("")}</div>
                           <div style='flex:1;'>${item.sno}</div>
                         </div>`,
                       )
