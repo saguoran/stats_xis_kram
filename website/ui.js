@@ -50,7 +50,7 @@ export async function navigateTo(targetPage, targetData = null) {
   saveToStorage(); // Save the updated state to localStorage
   // 5. Final Render
   render();
-    // set page data
+  // set page data
   try {
     // let newLimitCount = state.filters.limitCount;
     // direction=0
@@ -84,7 +84,7 @@ function getRoute() {
 }
 
 function resetFilter() {
-  state.filters = {...defaultState.filters};
+  state.filters = { ...defaultState.filters };
   let [start, end] = updateDataOffset(
     state.filters.index,
     0,
@@ -134,9 +134,9 @@ document.addEventListener("click", (e) => {
     );
   }
   let formUpdated = true;
-  if(e.target.id==="reset"){
+  if (e.target.id === "reset") {
     resetFilter();
-    _els().sortByCountBtn.deactivate();    
+    _els().sortByCountBtn.deactivate();
     _els().sortByNumberBtn.activate();
     _(`[data-limit].active`).deactivate();
     _(`[data-limit='50']`).activate();
@@ -151,7 +151,7 @@ document.addEventListener("click", (e) => {
     state.filters.orderBy != "number"
   ) {
     // console.log(e.target);
-    state.filters.orderBy = "number";    
+    state.filters.orderBy = "number";
     _(e.target).activate();
     _els().sortByCountBtn.deactivate();
   } else if (
@@ -167,8 +167,8 @@ document.addEventListener("click", (e) => {
   ) {
     // inactive the previous selected limited count button
     try {
-      let newLimitCount = parseInt(e.target.getAttribute(_a.data_limit));      
-      setDataByPosVectorOrLimitCount({limitCount:newLimitCount});
+      let newLimitCount = parseInt(e.target.getAttribute(_a.data_limit));
+      setDataByPosVectorOrLimitCount({ limitCount: newLimitCount });
       // prev Selected data-limit Btn
       _(`[data-limit].active`).deactivate();
       // active the new limit button
@@ -185,7 +185,7 @@ document.addEventListener("click", (e) => {
     // set offset
     try {
       let posVector = -e.target.getAttribute(_a.pos_vector);
-      setDataByPosVectorOrLimitCount({actionVector:posVector});
+      setDataByPosVectorOrLimitCount({ actionVector: posVector });
     } catch (error) {
       console.error(
         "no need to fix this error, it doesn't break the app",
@@ -203,43 +203,49 @@ document.addEventListener("click", (e) => {
   }
 });
 
-function setDataByPosVectorOrLimitCount({actionVector=0, index=state.filters.index,limitCount=state.filters.limitCount}={}) {
-  console.log(actionVector, index,limitCount);
+function setDataByPosVectorOrLimitCount({ actionVector = 0, index = state.filters.index, limitCount = state.filters.limitCount } = {}) {
+  console.log(actionVector, index, limitCount);
   let [start, end] = updateDataOffset(
     actionVector,
     index,
     limitCount,
     getData().data.length,
   );
-  console.log(actionVector,index,limitCount);
+  console.log(actionVector, index, limitCount);
   console.log(start, end);
-  
+  setAnalysisData(getData().data, ...[start, end]);
+  state.filters.index = start;
+  if (state.currentPage !== PAGES.analysis) {
+    return;
+  }
   if (start <= 0) {
     _('[data-pos-vector="1"]').disable();
     _("[data-meta-latest]").el.textContent = "今期";
     _("[data-meta-latest]").el.style.display = 'block';
-  }else if (end >= getData().data.length) {
+  } else if (end >= getData().data.length) {
     _('[data-pos-vector="-1"]').disable();
-    _("[data-meta-latest]").el.textContent = `最旧${end-start}期`;
+    _("[data-meta-latest]").el.textContent = `最旧${end - start}期`;
     _("[data-meta-latest]").el.style.display = 'block';
     console.log(getData().data.slice(start, end).length);
   } else {
     _('[data-pos-vector="1"]').enable();
-    _('[data-pos-vector="-1"]').enable();  
+    _('[data-pos-vector="-1"]').enable();
     _("[data-meta-latest]").el.textContent = "";
     _("[data-meta-latest]").el.style.display = 'none';
   }
-  setAnalysisData(getData().data, ...[start, end]);
-  state.filters.index = start;
-    _("#limit-range").el.innerHTML = renderLimitedRangeText();
+
+  _("#limit-range").el.innerHTML = renderLimitedRangeText();
 }
 
-function renderDataGrid(){
-  const hotCount = snoEntries.filter(x=>x[1]>0).length;
-    _("span.special-count").el.textContent = `(旺${hotCount})(冷${49-hotCount})`;
+function renderDataGrid() {
+  if (state.currentPage !== PAGES.analysis) {
+    return;
+  }
+  const hotCount = snoEntries.filter(x => x[1] > 0).length;
+  _("span.special-count").el.textContent = `(旺${hotCount})(冷${49 - hotCount})`;
 
-      _("div[data-analysis='sno']").el.innerHTML = renderDataAnalysis(snoEntries);
-    _("div[data-analysis='all']").el.innerHTML = renderDataAnalysis(allEntries);
+  _("div[data-analysis='sno']").el.innerHTML = renderDataAnalysis(snoEntries);
+  _("div[data-analysis='all']").el.innerHTML = renderDataAnalysis(allEntries);
 }
 
 function syncUrlWithDefaults() {
@@ -253,7 +259,7 @@ function syncUrlWithDefaults() {
         params.set(key, defaultState.filters[key]);
         updated = true;
       }
-      if(!Object.hasOwn(state.filters,key)){
+      if (!Object.hasOwn(state.filters, key)) {
         state.filters[key] = params.get(key);
       }
     });
@@ -273,9 +279,9 @@ function syncUrlWithDefaults() {
 }
 // ui.js - inside your initApp or DOMContentLoaded
 window.addEventListener("DOMContentLoaded", async () => {
-  
+
   syncUrlWithDefaults(),
-  await initApp();
+    await initApp();
   // Set the initial history entry so 'Back' has a place to return to
   window.history.replaceState(
     {
