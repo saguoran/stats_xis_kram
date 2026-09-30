@@ -26,6 +26,8 @@ export const DATASETS = {
     },
     /** calculate this every time SPA init */
     latestResultDate: null,
+    analysis150: [],
+    analysisCount150: [],
   },
   Macao: {
     /** @type {string} */
@@ -402,6 +404,20 @@ export async function syncMarkSixData(redirectPage, render) {
   if(!success||state.datasets.HongKong.data.length<200){
     await runStep((_) => render("在获取前200期数据"), fetchMarkSixData);
   }
+   
+   
+   let result = [];
+   for(let i=0;i<150;i++){
+      result.push((new Set(state.datasets.HongKong.data.map(x=>x.sno).slice(i, i+50))).size);
+   }
+  //  
+   state.datasets.HongKong.analysisCount150 = Object.entries( result.reduce((acc, n) => {
+  acc[n] = (acc[n] || 0) + 1;
+  return acc;
+}, {}))
+  .sort((a, b) => b[1] - a[1]);
+   state.datasets.HongKong.analysis150 = result;
+  
 
   state.currentPage = redirectPage;
   saveToStorage();

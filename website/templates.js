@@ -173,8 +173,6 @@ export function uiMap(page) {
     case PAGES.loading:
       return `
         <div class="loader-container">
-              <div id="test" class="loader-overlay active">
-        <div class="loader-container">
             <svg viewBox="0 0 220 220" class="loader-svg">
                 <circle cx="110" cy="110" r="50" fill="none" stroke="cyan" stroke-width="1" />
                 <g class="inner-hex-spin">
@@ -188,9 +186,6 @@ export function uiMap(page) {
             </svg>
             
             <p id="status-message">loading</p>
-        </div>
-        
-    </div>
         </div>
     `;
     case PAGES.analysis: {
@@ -274,6 +269,9 @@ export function uiMap(page) {
                       <h1>平特 </h1>
                       <div class="grid-container" data-analysis="all" >${renderDataAnalysis(allEntries)}
                 </div>
+                <h1>200期 每50期 旺数统计</h1>
+                <div class="analysis counter"  >${state.datasets.HongKong.analysisCount150.map(([number, count]) => `<span>${number}: ${count}</span>`).join("")}</div>
+                <div class="grid-container analysis" data-analysis="150" >${state.datasets.HongKong.analysis150.map((n) => `<span>${n}</span>`).join("")}</div>
             </div>
         `;
     }
@@ -288,7 +286,7 @@ export function uiMap(page) {
                       .data.map(
                         (item, index) => `
                         <div class="result-row">                          
-                          <div style='flex:3;'>${index + 1}. ${item.id}, ${item.date.substring(5).replace("-", "月")}日</div>
+                          <div style='flex:3;'><span>${(index + 1)}.</span> <span>${item.id}</span> <span>${item.date.substring(5).replace("-", ".")}</span></div>
                           <div style='flex:5;'>${item.no.map((n) => `<span>${n}</span>`).join("")}</div>
                           <div style='flex:1;'>${item.sno}</div>
                         </div>`,
