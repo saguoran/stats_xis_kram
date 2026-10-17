@@ -12,9 +12,8 @@ body {
         sans-serif;
     background-color: var(--surface-1);
     color: var(--gray-8);
+    font-size: 24px;
 }
-
-
 
 * {
     box-sizing: border-box;
@@ -26,15 +25,16 @@ body {
     font-weight: bold;
 }
 
-.result-row {
-    display: flex;
-    gap: 8px;
-    margin: 2px 0;
-    padding: 2px 2px;
-    align-items: center;
-    justify-content: start;
-    border-bottom: #007bff 1px solid;
-    color: var(--stone-10);
+#page-switch{
+    font-size: 24px;
+    font-weight: bold;
+    padding: 4px 16px;
+    border: 1px solid var(--gray-12);
+    border-radius: 4px;
+    box-shadow: var(--shadow-3);
+    &:active {
+        box-shadow: var(--shadow-1);
+    }
 }
 
 input[type="number"] {
@@ -134,14 +134,14 @@ small {
 }
 
 .balls {
-    font-size: large;
+    font-size: 36px;
     font-weight: bold;
 }
 
 .ball {
     display: inline-flex;
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     justify-content: center;
     align-items: center;
     background: var(--blue-2);
@@ -167,14 +167,26 @@ h2[data-scheduleDate] {
     flex-direction: column;
     justify-content: space-between;
     padding: 2px;
-
+    
+    .result-row {
+        display: flex;
+        gap: 4px;
+        padding: 2px 4px;
+        align-items: center;
+        justify-content: start;
+        color: var(--stone-10);
+        border-bottom: 1px solid var(--sand-3);        
+    }
+    .result-row:nth-child(even) {
+        background: linear-gradient(to right, var(--gray-2), var(--red-2));
+    }
+  
     .result-row div:first-child {
         display: flex;
         justify-content: space-evenly;
-        gap: 4px;
+        gap: 2px;
         font-weight: bold;
-        color: var(--gray-1);
-        background-color: var(--blue-10);
+        color: var(--gray-7);        
         flex-wrap: wrap;
     }
 }
@@ -190,7 +202,7 @@ h2[data-scheduleDate] {
 }
 
 #result-list .result-row div:nth-child(2) span {
-    -webkit-text-stroke: 3px var(--gray-2);
+    -webkit-text-stroke: 4px var(--gray-1);
     paint-order: stroke fill;
     font-weight: bold;
     border: 1px solid var(--gray-6);
@@ -377,7 +389,6 @@ button svg {
 [data-count="9"] {
     background-color: var(--blue-3);
     border: 2px solid var(--blue-10);
-
     div {
         color: var(--blue-10);
     }
