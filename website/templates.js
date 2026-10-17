@@ -108,8 +108,7 @@ export const _ = (target) => {
  * Render the visible ID/date range for the currently selected slice.
  * @returns {string}
  */
-export const renderLimitedRangeText = () => `<div> ${slicedData[slicedData.length - 1]?.id}期➡️${slicedData[0]?.id}期</div>
-    <div> ${slicedData[slicedData.length - 1]?.date}➡️${slicedData[0]?.date}</div>`;
+export const renderLimitedRangeText = () => `<div> ${slicedData[slicedData.length - 1]?.id}期${slicedData[slicedData.length - 1]?.date.substring(5).replace("-", '.')}➡️${slicedData[0]?.id}期${slicedData[0]?.date.substring(5).replace("-", '.')}</div>`;
 
 /**
  * Render the text for the reverse order toggle button.
@@ -197,24 +196,20 @@ export function uiMap(page) {
       return `
             <div class="page">
             <h1>${metadata.cnName}统计</h1>
+            <p><a ${_a.data_highlight} id="page-switch" href="?page=datalist">过去结果</a></p>
             <section class="latest-result">
     <h2>
-      今期 👉🏻 第${latest.id}期
-    </h2>
-    <p data-schedule-date>
-      <strong>时间 👉🏻</strong>
-      ${new Intl.DateTimeFormat("zh-CN", {
-        year: "numeric",
+      今期 👉🏻 第${latest.id}期   ${new Intl.DateTimeFormat("zh-CN", {
         month: "long",
         day: "numeric",
         weekday: "long",
       }).format(new Date(latest.date))}
-    </p>
+    </h2>
+   
     <div 
       class="result"
       data-result="${latest.no.join(",")},${latest.sno}"
     >
-      <strong>今期结果</strong>
       <div class="balls">
         ${latest.no.map((x) => `<span class="ball">${x}</span>`).join("")}
         <span class="plus">+</span>
@@ -225,7 +220,6 @@ export function uiMap(page) {
     </div>
   </section>     
             <h2 data-scheduled-date="${metadata.cnName}">下期时间👉🏻 <span>${getNextScheduledDate()}</span></h2>
-            <p><a ${_a.data_highlight} id="page-switch" href="?page=datalist">过去结果</a></p>
                 <div class="meta-info">数据总量👉🏻 ${metadata.data?.length || 0}期 <button id='reset'>重置设定</button> </div>
                 <div class="controls-container">
         <!-- limit Group -->
