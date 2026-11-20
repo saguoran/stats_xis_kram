@@ -75,7 +75,8 @@ small {
     grid-template-columns: repeat(10, 1fr);
     
     /* Space between the squares */
-    gap: 2px;
+    gap: 1px;
+
     &.analysis {
         font-weight: bold;
         color: var(--gray-8);
@@ -103,18 +104,12 @@ small {
     align-items: center;
     justify-content: space-around;
     font-family: sans-serif;
-    border: #007bff 1px solid;
+    border: #333 2px solid;
     border-radius: 4px;
-    display: flex;
-    padding: 4px 0;
+    padding-top: 2px;
     font-size: x-large;
     flex-direction: column;
 }
-
-/* 
-.grid-item:nth-child(even) {
-    background-color: var(--gray-2);
-} */
 
 .grid-item>strong {
     display: flex;
@@ -122,9 +117,9 @@ small {
     align-items: center;
     background-color: var(--stone-9);
     color: var(--gray-1);
-    width: 32px;
-    height: 32px;
-    padding: 18px;
+    max-width: 32px;
+    aspect-ratio: 1 / 1;
+    padding: 2px 0 4px 0;
     border-radius: 50%;
 }
 
